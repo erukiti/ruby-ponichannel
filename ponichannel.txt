@@ -1,0 +1,17 @@
+- ローカル向け簡易 2ch BBS -
+
+OpenJane でのみ動作を確認。
+メモ取り用に。
+
+% ./standalone.rb
+
+ただし、Webrick の Content-Range の扱いに問題があるようで、
+そのままだと、書き込みをした後、未読更新がうまくいかない。
+
+lib/webrick/httpservlet/filehandler.rb:110(ver 1.8.5)
+----
+- res['content-range'] = "#{first}-#{last}/#{filesize}"
++ res['content-range'] = "bytes #{first}-#{last}/#{filesize}" 
+----
+
+これを改造する必要がある。

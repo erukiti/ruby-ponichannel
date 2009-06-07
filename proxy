@@ -1,0 +1,27 @@
+#!/usr/bin/env ruby
+# テスト用 proxy
+
+require 'webrick'
+require 'webrick/httpproxy'
+
+handler = Proc.new() {|req, res|
+	print "URI: #{req.request_uri.to_s} #{res.status}\n"
+	p req.header
+
+	print "body: [#{res.body}]\n"
+
+	p req
+	p res
+}
+
+# プロキシサーバオブジェクトを作る
+s = WEBrick::HTTPProxyServer.new(:Port => 8080, :ProxyContentHandler => handler)
+
+# SIGINT を捕捉する。
+Signal.trap('INT') do
+	# 捕捉した場合、シャットダウンする。
+	s.shutdown
+end
+
+# サーバを起動する。
+s.start
